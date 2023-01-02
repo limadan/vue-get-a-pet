@@ -24,7 +24,7 @@ const router = createRouter({
       components: {
         header: Navbar,
         default: HomeView
-      },
+      }
     },
     {
       path: "/adoptions",
