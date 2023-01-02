@@ -1,0 +1,28 @@
+@import './base.css';
+
+#app {
+  margin: 0 auto;
+  font-family: Poppins;
+  font-weight: normal;
+  display: flex;
+  flex-direction: column;
+}
+
+a,
+.green {
+  text-decoration: none;
+  transition: 0.4s;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(49, 100%, 35%, 0.2);
+  }
+}
+
+/*@media (min-width: 1024px) {
+  body {
+    display: flex;
+    place-items: center;
+  }
+}*/
