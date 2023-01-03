@@ -1,7 +1,7 @@
 <script setup>
 import Swal from 'sweetalert2';
 import api from '../api/config';
-import CardPet from '../components/CardPet.vue';
+import PetAdopt from '../components/cards/PetAdopt.vue';
 </script>
 
 
@@ -10,7 +10,7 @@ import CardPet from '../components/CardPet.vue';
         <h2>Pets cadastrados</h2>
         <div class="card-pet-container">
             <template v-for="pet in this.petArray">
-                <CardPet :pet="pet"/>
+                <PetAdopt :pet="pet"/>
             </template>
         </div>
     </div>
@@ -21,7 +21,7 @@ import CardPet from '../components/CardPet.vue';
 export default {
     name: "HomeView",
     components: {
-        CardPet
+        PetAdopt
     },
     data(){
         return {
@@ -31,12 +31,7 @@ export default {
 
     mounted(){
         Swal.showLoading()
-        const TOKEN = localStorage.getItem('TOKEN')
-        api.get('pet/getAllPets', {
-            headers: {
-                'Authorization': `Bearer ${TOKEN}`
-            }
-        }).then((res)=>{
+        api.get('pet/getAllPets').then((res)=>{
             this.petArray = res.data
             Swal.close()
         }).catch(err=>{
@@ -57,6 +52,7 @@ export default {
 <style>
 
 .card-pet-container {
+    margin-top: 1rem;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 1rem

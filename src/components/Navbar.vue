@@ -6,10 +6,17 @@
         </div>
         
         <div class="links">
-            <RouterLink to="home">Home</RouterLink>
-            <RouterLink to="adoptions">Minhas Adoções</RouterLink>
-            <RouterLink to="pets">Meus Pets Cadastrados</RouterLink>
-            <RouterLink to="account">Conta</RouterLink>
+            <RouterLink to="/">
+                <i class="fa-solid fa-house"></i>   Home
+            </RouterLink>
+            <RouterLink to="adoptions">
+                <i class="fa-solid fa-bone"></i>  Minhas Adoções</RouterLink>
+            <RouterLink to="pets">
+                <i class="fa-solid fa-cake"></i>  Meus Pets Cadastrados
+            </RouterLink>
+            <RouterLink to="account">
+                <i class="fa-solid fa-user"></i>   Conta
+            </RouterLink>
         </div>
     </nav>
 </template>

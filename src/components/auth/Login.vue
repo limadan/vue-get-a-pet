@@ -57,7 +57,7 @@ export default {
                     icon: 'success',
                     text: 'Login realizado com sucesso!'
                 }).then(()=>{
-                    this.$router.push('/home')
+                    this.$router.push('/')
                 })
 
                 
@@ -130,7 +130,7 @@ export default {
 }
 
 
-.form-container:focus-within{
+.form-container input:focus-within{
     border-bottom: solid 2px #c5a100;
 }
 </style>

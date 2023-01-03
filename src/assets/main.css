@@ -9,7 +9,8 @@
 }
 
 a,
-.green {
+.green, button {
+  cursor: pointer;
   text-decoration: none;
   transition: 0.4s;
 }
