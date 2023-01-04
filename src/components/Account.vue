@@ -9,26 +9,28 @@ import api from '../api/config';
             <div class="form-container">
                 <label for="profile-image">Foto de perfil</label>
                 <br/>
-                <img :src="this.profile_image"/>
+                <img v-if="this.profile_image" :src="this.profile_image"/>
+                <img v-else src="../assets/blank-profile.svg"/>
             </div>
             
             <div class="form-container">
                 <label for="name">Nome</label>
                 <br/>
-                <input type="name" v-model="this.name" disabled/>
+                <input type="name" v-model="this.nameEdit" :disabled="!this.editionEnabled"/>
             </div>
 
 
             <div class="form-container">
                 <label for="email">E-mail</label>
                 <br/>
-                <input type="email" v-model="this.email" disabled/>
+                <input type="email" v-model="this.emailEdit" :disabled="!this.editionEnabled"/>
             </div>
-
-            <h2>Opções</h2>
             <div class="form-container">
-                <a>Editar dados</a>
-                <br/>
+                <button @click="this.editUserData()">Editar</button>
+                <button v-if="editionEnabled" @click="this.cancelEdit()">Cancelar</button>
+            </div>
+            
+            <div class="form-container">
                 <a @click="this.logout()">Fazer logout</a>
                 <br/>
                 <a style="color: #FF0707" @click="this.deleteUser()">
@@ -46,11 +48,15 @@ export default {
     data(){
         return {
             editionEnabled: false,
-            name: '',
-            email: '',
-            password: '',
-            profile_image: '',
-            imageFile: ''
+            user: {
+                name: '',
+                email: '',
+                profile_image: ''
+            },
+            nameEdit: '',
+            emailEdit: '',
+            imageFile: '',
+            editionEnabled: false
         }
     },
 
@@ -65,10 +71,13 @@ export default {
                     'Authorization': token? `Bearer ${token}` : ''
                 }
             }).then((res)=>{
-                this.name = res.data.name
-                this.email = res.data.email
-                this.password = res.data.password
-                this.profile_image = res.data.profile_image
+                this.user.name = res.data.name
+                this.user.email = res.data.email
+                this.user.password = res.data.password
+                this.user.profile_image = res.data.profile_image
+
+                this.nameEdit = this.user.name
+                this.emailEdit = this.user.email
                 Swal.close()
             }).catch(err=>{
                 console.log(err)
@@ -77,39 +86,6 @@ export default {
                     text: `${err.response.data.message}`
                 })
                 this.$router.push('login')
-            })
-        },
-
-        updateUser(){
-            Swal.fire({
-                icon: 'question',
-                text: `Tem certeza de que deseja prosseguir com a alteração?`,
-                showConfirmButton: true,
-                showCancelButton: true,
-                confirmButtonText: 'ALTERAR',
-                cancelButtonText: 'CANCELAR'
-            }).then(result=>{
-                if(result.isConfirmed){
-                    Swal.showLoading()
-                    const token = localStorage.getItem('TOKEN')
-                    const dataObject = {
-                        name: this.name,
-                        email: this.email
-                    }
-
-
-                    api.put('user/updateUser', {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    }, dataObject).then(res=>{
-                        console.log(res)
-                    }).catch(err=>{
-                        console.log(err)
-                    })
-
-                    Swal.close()
-                }
             })
         },
 
@@ -163,6 +139,62 @@ export default {
         logout(){
             localStorage.removeItem('TOKEN')
             this.$router.push('login')
+        },
+
+        editUserData(){
+            if(!this.editionEnabled){
+                //Salvar dados no banco
+                this.editionEnabled = !this.editionEnabled
+                return
+            }
+
+            Swal.fire({
+                icon: "warning",
+                text: "Tem certeza de que deseja alterar suas informações de nome e e-mail? O seu cadastro será alterado da próxima vez que fazer login.",
+                showConfirmButton: true,
+                showCancelButton: true,
+                cancelButtonText: "CANCELAR",
+                confirmButtonText: "ALTERAR"
+            }).then((result)=>{
+                console.log(result)
+                if(!result.isConfirmed){
+                    this.cancelEdit()
+                }else{
+                    Swal.showLoading()
+                    const dataObject = {
+                            name: this.nameEdit,
+                            email: this.emailEdit
+                        }
+
+                    api.put('user/updateUser', dataObject).then(res=>{
+                        Swal.fire({
+                            icon: 'success',
+                            text: 'Dados alterados com sucesso!'
+                        })
+
+                        this.getUserData()
+                    }).catch(err=>{
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Houve algum erro ao tentar editar os seus dados. Tente novamente mais tarde.'
+                        })
+
+                        this.getUserData()
+                        console.log(err)
+                    })
+
+                    Swal.close()
+                }
+
+                this.editionEnabled = false
+            })
+            
+        },
+
+        cancelEdit(){
+            this.nameEdit = this.user.name
+            this.emailEdit = this.user.email
+            this.editionEnabled = false
         }
 
     },
@@ -208,14 +240,17 @@ export default {
     width: 100%;
     height: 2rem;
     padding: 0 1rem;
-    background-color: #cecece; 
+    background-color: #ebebeb;
     border: none;
     outline: none;
     transition: 0.2s all;
 }
 
+.form-container input[disabled]{
+    background-color: #cecece; 
+}
+
 .form-container input:focus-within{
-    background-color: #ebebeb;
     border-bottom: solid 2px #c5a100;
 }
 
@@ -232,5 +267,7 @@ export default {
     color: #ffffff;
     background-color: #e45353;
 }
+
+
 
 </style>

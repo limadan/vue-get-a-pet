@@ -1,4 +1,6 @@
 import { createApp } from "vue";
+//import { library } from "@fortawesome/fontawesome-svg-core";
+
 import App from "./App.vue";
 import router from "./router";
 import Vue3Material from 'vue3-material';

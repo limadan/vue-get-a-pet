@@ -1,9 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Navbar from '../components/Navbar.vue'
+import NavbarMain from '../components/NavbarMain.vue'
+import NavbarSecondary from '../components/NavbarSecondary.vue'
 import LoginView from "../views/LoginView.vue";
 import SignupView from "../views/SignupView.vue";
 import HomeView from '../views/HomeView.vue'
 import AccountView from '../views/AccountView.vue'
+import PetsRegisteredView from '../views/PetsRegisteredView.vue'
+import RegisterNewPetView from '../views/RegisterNewPetView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,7 +25,7 @@ const router = createRouter({
       path: "/",
       name: "Home",
       components: {
-        header: Navbar,
+        header: NavbarMain,
         default: HomeView
       }
     },
@@ -30,7 +33,7 @@ const router = createRouter({
       path: "/adoptions",
       name: "Minhas adoções",
       components: {
-        header: Navbar
+        header: NavbarMain
       }
       //component: HomeView,
     },
@@ -38,7 +41,8 @@ const router = createRouter({
       path: "/pets",
       name: "Meus pets cadastrados",
       components: {
-        header: Navbar
+        header: NavbarMain,
+        default: PetsRegisteredView
       }
       //component: HomeView,
     },
@@ -46,11 +50,23 @@ const router = createRouter({
       path: "/account",
       name: "Configurações da conta",
       components: {
-        header: Navbar,
+        header: NavbarMain,
         default: AccountView
       }
       //component: HomeView,
+    },
+    {
+      path: '/register-pet',
+      name: "Registrar novo pet",
+      components: {
+        header: NavbarSecondary,
+        default: RegisterNewPetView
+      }
     }
+
+    
+
+    
   ]
 });
 
