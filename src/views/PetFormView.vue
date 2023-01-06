@@ -5,13 +5,13 @@ import api from '../api/config';
 <template>
     <div style="padding: 2rem;">
         <div class="form">
-            <h1>Registrar novo pet</h1>
+            <h1>{{!this.$route.params.id?"Registrar novo pet":"Atualizar pet"}}</h1>
 
             <div class="form-container">
                 <label for="name">Imagem do pet</label>
                 <br/>
                 <br/>
-                <img v-if="this.petImagePreview&&this.petImageFile" :src="this.petImagePreview"/>
+                <img v-if="this.petImagePreview" :src="this.petImagePreview"/>
                 <img v-else src="../assets/blank-pet.svg"/>
                 <input type="file" ref="file" v-on:change="this.uploadImage()"/>
             </div>
@@ -42,7 +42,8 @@ import api from '../api/config';
             </div>
 
             <div class="form-container">
-                <button @click="this.registerNewPet()">CADASTRAR NOVO PET</button>
+                <button v-if="!this.$route.params.id" @click="this.saveNewPet()">CADASTRAR PET</button>
+                <button v-else @click="this.updatePet()">ATUALIZAR PET</button>
             </div>
         </div>
     </div>
@@ -50,7 +51,8 @@ import api from '../api/config';
 
 <script>
     export default {
-        name: "RegisterNewPet",
+        name: "saveNewPet",
+        props: ['id'],
         data(){
             return {
                 name: '',
@@ -68,10 +70,10 @@ import api from '../api/config';
                 this.petImagePreview = URL.createObjectURL(this.petImageFile)
             },
 
-            registerNewPet(){
+            saveNewPet(){
                 Swal.fire({
                     icon: 'question',
-                    text: 'Tem certeza de que deseja cadastrar este pet na plataforma?',
+                    text: 'Tem certeza de que deseja cadastrar este pet?',
                     showConfirmButton: true,
                     confirmButtonText: 'CADASTRAR PET',
                     showCancelButton: true,
@@ -87,8 +89,10 @@ import api from '../api/config';
                         formData.append('pet_image', this.petImageFile)
 
                         const headers = {
-                            'Authorization': `Bearer ${localStorage.getItem('TOKEN')}`,
-                            'Content-Type': 'multipart/form-data'
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('TOKEN')}`,
+                                'Content-Type': 'multipart/form-data'
+                            }
                         }
 
                         api.post('pet/registerNewPet', formData, headers).then(res=>{
@@ -105,12 +109,72 @@ import api from '../api/config';
                         })
                     }
                 })
+            },
+
+            updatePet(){
+                Swal.fire({
+                    icon: 'question',
+                    text: 'Tem certeza de que deseja atualizar este pet?',
+                    showConfirmButton: true,
+                    confirmButtonText: 'ATUALIZAR PET',
+                    showCancelButton: true,
+                    cancelButtonText: 'CANCELAR'
+                }).then(result=>{
+                    if(result.isConfirmed){
+                        Swal.showLoading()
+                        const id = this.$route.params.id
+                        const formData = new FormData()
+                        formData.append('name', this.name)
+                        formData.append('age', this.age)
+                        formData.append('weight', this.weight)
+                        formData.append('color', this.color)
+                        if(this.petImageFile){
+                            formData.append('pet_image', this.petImageFile)
+                        }else{
+                            formData.append('pet_image', this.petImagePreview)
+                        }
+                         
+                        console.log(formData)
+                        const headers = {
+                            'Authorization': `Bearer ${localStorage.getItem('TOKEN')}`,
+                            'Content-Type': 'multipart/form-data'
+                        }
+
+                        api.put(`pet/updatePet/${id}`, formData, headers).then(res=>{
+                            Swal.fire({
+                                icon: 'success',
+                                text: 'Pet atualizado com sucesso!'
+                            }).then(()=>{
+                                this.$router.push('/pets')
+                            })
+                        }).catch((err)=>{
+                            Swal.fire({
+                                icon: 'error'
+                            })
+                        })
+                    }
+                })
+            }
+        },
+
+        mounted(){
+            const id = this.$route.params.id
+            if(id){
+                api.get(`pet/getPetById/${id}`).then((res)=>{
+                    const petData = res.data
+
+                    this.name = petData.name
+                    this.age = petData.age
+                    this.weight = petData.weight
+                    this.color = petData.color
+                    this.petImagePreview = petData.pet_image
+                })
             }
         }
     }
 </script>
 
-<style>
+<style scoped>
 .form {
     background-color: #ffffff;
     padding: 2rem;

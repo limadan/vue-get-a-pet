@@ -1,17 +1,11 @@
 <template>
     <div>
-        <div class="pet-card">
+        <div class="pet-card" @click="this.seeDetail()">
             <img :src="this.$props.pet.pet_image"/>
             <div class="pet-info">
                 <h2>{{this.$props.pet.name}}</h2>
-                <h4>
-                    <i class="fas fa-birthday-cake"></i>  {{this.$props.pet.age}} anos</h4>
-                <template v-if="!this.$props.pet.adopted">
-                    <button>ADOTAR</button>
-                </template>
-                <template v-else>
-                    <h4>Adotado!</h4>
-                </template>
+                <h4><i class="fas fa-birthday-cake"></i>  {{this.$props.pet.age}} anos</h4>
+                <h4 v-if="this.$props.pet.adopted">Adotado!</h4>
             </div>
         </div>
     </div>
@@ -21,7 +15,13 @@
 
 export default {
     name: "CardPet",
-    props: ['pet']
+    props: ['pet'],
+    methods: {
+        seeDetail(){
+            const petId = this.$props.pet.id
+            this.$router.push(`pet-detail/${petId}`)
+        }
+    }
 }
 
 </script>

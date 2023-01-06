@@ -45,10 +45,13 @@ export default {
             this.pets = res.data
             Swal.close()
         }).catch((err)=>{
+            console.log(err)
             const message = err.response.data.message
             Swal.fire({
                 icon: 'error',
                 text: `${message}`
+            }).then(()=>{
+                this.$router.push('login')
             })
         })
     }

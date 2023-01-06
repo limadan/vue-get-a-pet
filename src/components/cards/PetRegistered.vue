@@ -2,12 +2,16 @@
     <div class="card-pet-registered">
         <div class="pet-info">
             <img :src="this.$props.pet.pet_image"/>
-            <h3>{{this.$props.pet.name}}</h3>
+            <div style="margin-left: 20px">
+                <h3>{{this.$props.pet.name}}</h3>
+                <h5 v-if="this.$props.pet.adopted">Status de adoção: Adotado</h5>
+                <h5 v-else>Status de adoção: Não adotado</h5>
+            </div>
         </div>
         <div class="interactions">
-            <button>Editar</button>
-            <button>Visualizar</button>
-            <button @click="this.deletePet()">Excluir pet</button> 
+            <button @click="this.editPet()">Editar</button>
+            <button @click="this.viewPet()">Visualizar</button>
+            <button @click="this.deletePet()">Excluir pet</button>
         </div>
     </div>
 </template>
@@ -53,6 +57,15 @@ export default {
                 }
             })
             
+        },
+
+        viewPet(){
+            const id = this.$props.pet.id
+            this.$router.push(`pet-detail/${id}`)
+        },
+
+        editPet(){
+            this.$router.push(`edit-pet/${this.$props.pet.id}`)
         }
     }
 
@@ -75,7 +88,6 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 12%;
 }
 
 .pet-info img{
@@ -96,5 +108,7 @@ export default {
     height: 2rem;
     border-radius: 1rem;
     border: 1px solid;
+    background-color: #0a1c83;
+    color: #fff
 }
 </style>
